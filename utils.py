@@ -5,7 +5,7 @@ import os
 import subprocess
 import cv2
 import numpy as np
-
+import shutil
 import torch
 
 from models import MODEL_ZOO
@@ -68,6 +68,8 @@ def load_generator(model_name):
 
     model_config = MODEL_ZOO[model_name].copy()
     url = model_config.pop('url')  # URL to download model if needed.
+    if 'path' in model_config:
+        path = model_config.pop('path')  # Path to copy model if needed.
 
     # Build generator.
     print(f'Building generator for model `{model_name}` ...')
@@ -79,9 +81,18 @@ def load_generator(model_name):
     checkpoint_path = os.path.join(CHECKPOINT_DIR, model_name + '.pth')
     print(f'Loading checkpoint from `{checkpoint_path}` ...')
     if not os.path.exists(checkpoint_path):
-        print(f'  Downloading checkpoint from `{url}` ...')
-        subprocess.call(['wget', '--quiet', '-O', checkpoint_path, url])
-        print(f'  Finish downloading checkpoint.')
+        if url is not None:
+            print(f'  Downloading checkpoint from `{url}` ...')
+            subprocess.call(['wget', '--quiet', '-O', checkpoint_path, url])
+            print(f'  Finish downloading checkpoint.')
+        else:
+            # copy from path
+            assert path is not None, 'Path is not provided.'
+            print(f'  Copying checkpoint from `{path}` ...')
+            os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
+            shutil.copy(path, checkpoint_path)
+            
+            
     checkpoint = torch.load(checkpoint_path, map_location='cpu')
     if 'generator_smooth' in checkpoint:
         generator.load_state_dict(checkpoint['generator_smooth'])
@@ -166,9 +177,9 @@ def factorize_weight(generator, layer_idx='all'):
     # Get layers.
     if gan_type == 'pggan':
         layers = [0]
-    elif gan_type in ['stylegan', 'stylegan2']:
+    elif gan_type in ['stylegan', 'stylegan2', 'stylegan2ada']:
         if layer_idx == 'all':
-            layers = list(range(generator.num_layers))
+            layers = list(range(generator.num_layers - 1))
         else:
             layers = parse_indices(layer_idx,
                                    min_val=0,
@@ -183,7 +194,7 @@ def factorize_weight(generator, layer_idx='all'):
         if gan_type == 'pggan':
             weight = generator.__getattr__(layer_name).weight
             weight = weight.flip(2, 3).permute(1, 0, 2, 3).flatten(1)
-        elif gan_type in ['stylegan', 'stylegan2']:
+        elif gan_type in ['stylegan', 'stylegan2', 'stylegan2ada']:
             weight = generator.synthesis.__getattr__(layer_name).style.weight.T
         weights.append(weight.cpu().detach().numpy())
     weight = np.concatenate(weights, axis=1).astype(np.float32)

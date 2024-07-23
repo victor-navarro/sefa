@@ -1,0 +1,1 @@
+python sefa.py 'stylegan2ada_6Mhist' -L 0-1 -N 5 -K 5

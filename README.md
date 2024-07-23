@@ -56,7 +56,7 @@ We also provide an interface for interactive editing based on [StreamLit](https:
 
 ```bash
 pip install streamlit
-CUDA_VISIBLE_DEVICES=0 streamlit run interface.py
+set CUDA_VISIBLE_DEVICES=0 & streamlit run interface.py
 ```
 
 After the interface is launched, users can play with it via a browser.

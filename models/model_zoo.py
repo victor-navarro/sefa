@@ -298,6 +298,29 @@ MODEL_ZOO = {
         resolution=512,
         url='https://mycuhk-my.sharepoint.com/:u:/g/personal/1155082926_link_cuhk_edu_hk/EYSnUsxU8KJFuMHhZm-JLWoB0nHxdlbrLHNZ_Qkoe3b9LA?e=Ycjp5A&download=1',
     ),
+
+    # Local
+    'stylegan2ada_6Mhist': dict(
+        gan_type='stylegan2ada',
+        resolution=512,
+        fmaps_base=16 << 10,
+        mapping_layers=2,
+        label_size=6,
+        url=None,
+        path="C:\\gancat-local\\gan-pkls\\nested-gan-6M\\nested-gan-6M.pth"
+    ),
+    'stylegan2ada_brecahad': dict(
+        gan_type='stylegan2ada',
+        resolution=512,
+        url=None,
+        path="C:\\gancat-local\\gan-pkls\\brecahad.pth"
+    ),
+        'stylegan2_ffhq': dict(
+        gan_type='stylegan',
+        resolution=512,
+        url=None,
+        path="C:\\gancat-local\\gan-pkls\\stylegan_ffhq512.pth"
+    )
 }
 
 # pylint: enable=line-too-long

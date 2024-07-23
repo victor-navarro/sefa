@@ -8,14 +8,17 @@ from .stylegan_generator import StyleGANGenerator
 from .stylegan_discriminator import StyleGANDiscriminator
 from .stylegan2_generator import StyleGAN2Generator
 from .stylegan2_discriminator import StyleGAN2Discriminator
+from .stylegan2ada_generator import StyleGAN2ADAGenerator
+from .stylegan2ada_discriminator import StyleGAN2ADADiscriminator
 
 __all__ = [
     'MODEL_ZOO', 'PGGANGenerator', 'PGGANDiscriminator', 'StyleGANGenerator',
     'StyleGANDiscriminator', 'StyleGAN2Generator', 'StyleGAN2Discriminator',
+    'StyleGAN2ADAGenerator', 'StyleGAN2ADADiscriminator',
     'build_generator', 'build_discriminator', 'build_model'
 ]
 
-_GAN_TYPES_ALLOWED = ['pggan', 'stylegan', 'stylegan2']
+_GAN_TYPES_ALLOWED = ['pggan', 'stylegan', 'stylegan2', 'stylegan2ada']
 _MODULES_ALLOWED = ['generator', 'discriminator']
 
 
@@ -41,6 +44,8 @@ def build_generator(gan_type, resolution, **kwargs):
         return StyleGANGenerator(resolution, **kwargs)
     if gan_type == 'stylegan2':
         return StyleGAN2Generator(resolution, **kwargs)
+    if gan_type == 'stylegan2ada':
+        return StyleGAN2ADAGenerator(resolution, **kwargs)
     raise NotImplementedError(f'Unsupported GAN type `{gan_type}`!')
 
 
@@ -66,6 +71,8 @@ def build_discriminator(gan_type, resolution, **kwargs):
         return StyleGANDiscriminator(resolution, **kwargs)
     if gan_type == 'stylegan2':
         return StyleGAN2Discriminator(resolution, **kwargs)
+    if gan_type == 'stylegan2ada':
+        return StyleGAN2ADADiscriminator(resolution, **kwargs)
     raise NotImplementedError(f'Unsupported GAN type `{gan_type}`!')
 
 
@@ -111,4 +118,6 @@ def parse_gan_type(module):
         return 'stylegan'
     if isinstance(module, (StyleGAN2Generator, StyleGAN2Discriminator)):
         return 'stylegan2'
+    if isinstance(module, (StyleGAN2ADAGenerator, StyleGAN2ADADiscriminator)):
+        return 'stylegan2ada'
     raise ValueError(f'Unable to parse GAN type from type `{type(module)}`!')
